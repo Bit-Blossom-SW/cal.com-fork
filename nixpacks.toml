@@ -1,6 +1,12 @@
 [variables]
 NODE_ENV = "production"
 NODE_OPTIONS = "--max-old-space-size=8192"
+# Required for build - replace with actual values in Railway dashboard
+NEXTAUTH_SECRET = "build-secret-replace-in-railway"
+CALENDSO_ENCRYPTION_KEY = "build-key-replace-in-railway-32chars"
+NEXTAUTH_URL = "http://localhost:3000"
+NEXT_PUBLIC_WEBAPP_URL = "http://localhost:3000"
+NEXT_PUBLIC_WEBSITE_URL = "http://localhost:3000"
 
 [phases.install]
 cmds = ["yarn install --frozen-lockfile"]
