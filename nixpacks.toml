@@ -1,6 +1,9 @@
 [variables]
 NODE_ENV = "production"
 NODE_OPTIONS = "--max-old-space-size=8192"
+# Speed up build
+NEXT_TELEMETRY_DISABLED = "1"
+DISABLE_ESLINT = "true"
 # Required for build - replace with actual values in Railway dashboard
 NEXTAUTH_SECRET = "build-secret-replace-in-railway"
 CALENDSO_ENCRYPTION_KEY = "build-key-replace-in-railway-32chars"
@@ -13,7 +16,7 @@ cmds = ["yarn install --frozen-lockfile"]
 
 [phases.build]
 cmds = [
-  "NODE_OPTIONS='--max-old-space-size=8192' yarn build"
+  "NODE_OPTIONS='--max-old-space-size=8192' yarn workspace @calcom/web build"
 ]
 
 [start]
