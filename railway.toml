@@ -28,5 +28,5 @@ healthcheckTimeout = 300
 
 # Resource configuration
 [services.resources]
-memoryGB = 2
-vCPUs = 1
+memoryGB = 4
+vCPUs = 2

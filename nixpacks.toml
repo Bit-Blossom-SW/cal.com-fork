@@ -1,12 +1,15 @@
 [variables]
 NODE_ENV = "production"
-NODE_OPTIONS = "--max-old-space-size=4096"
+NODE_OPTIONS = "--max-old-space-size=8192"
 
 [phases.install]
 cmds = ["yarn install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["yarn build"]
+cmds = [
+  "NODE_OPTIONS='--max-old-space-size=8192' yarn build",
+  "NODE_OPTIONS='--max-old-space-size=8192' yarn workspace @calcom/prisma db-deploy"
+]
 
 [start]
 cmd = "yarn workspace @calcom/web start"
