@@ -1,0 +1,32 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+numReplicas = 1
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+name = "calcom-web"
+
+[services.source]
+repo = "jonathanrobertpolikowski/mommates_cal_source"
+branch = "main"
+
+[services.variables]
+NODE_ENV = "production"
+CALCOM_ENV = "production"
+PORT = "3000"
+
+[services.build]
+buildCommand = "yarn install && yarn build"
+startCommand = "yarn workspace @calcom/web start"
+
+[services.deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+
+# Resource configuration
+[services.resources]
+memoryGB = 2
+vCPUs = 1

@@ -1,0 +1,18 @@
+[build]
+nixpkgs = ["nodejs-18_x", "yarn", "python3", "make", "gcc", "g++"]
+
+[install]
+cmds = ["yarn install --frozen-lockfile"]
+
+[build]
+cmds = [
+  "yarn build",
+  "yarn workspace @calcom/prisma db-deploy"
+]
+
+[start]
+cmd = "yarn workspace @calcom/web start"
+
+[variables]
+NODE_ENV = "production"
+NODE_OPTIONS = "--max-old-space-size=4096"
