@@ -13,8 +13,7 @@ cmds = ["yarn install --frozen-lockfile"]
 
 [phases.build]
 cmds = [
-  "NODE_OPTIONS='--max-old-space-size=8192' yarn build",
-  "NODE_OPTIONS='--max-old-space-size=8192' yarn workspace @calcom/prisma db-deploy"
+  "NODE_OPTIONS='--max-old-space-size=8192' yarn build"
 ]
 
 [start]
