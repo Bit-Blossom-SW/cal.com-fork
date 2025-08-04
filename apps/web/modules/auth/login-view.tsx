@@ -174,6 +174,104 @@ PageProps & WithNonceProps<{}>) {
 
       console.log("[Mommates AutoLogin] Script loaded");
 
+      // Create and show loading overlay
+      function showLoader() {
+        // Check if loader already exists
+        if (document.getElementById("mommates-autofill-loader")) {
+          return;
+        }
+
+        const loaderHTML = `
+            <div id="mommates-autofill-loader" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(3px);
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            ">
+                <div style="
+                    text-align: center;
+                    padding: 40px;
+                    background: white;
+                    border-radius: 16px;
+                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                    max-width: 400px;
+                    margin: 20px;
+                ">
+                    <div style="
+                        width: 60px;
+                        height: 60px;
+                        border: 4px solid #f3f4f6;
+                        border-top: 4px solid #10b981;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin: 0 auto 24px;
+                    "></div>
+                    
+                    <h3 style="
+                        margin: 0 0 12px 0;
+                        font-size: 20px;
+                        font-weight: 600;
+                        color: #1f2937;
+                    ">Logging you in...</h3>
+                    
+                    <p style="
+                        margin: 0 0 20px 0;
+                        font-size: 14px;
+                        color: #6b7280;
+                        line-height: 1.5;
+                    ">Please wait while we automatically fill in your credentials and log you into your calendar.</p>
+                    
+                    <div id="loader-status" style="
+                        font-size: 12px;
+                        color: #10b981;
+                        font-weight: 500;
+                        margin-top: 16px;
+                    ">Preparing login...</div>
+                </div>
+                
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML("beforeend", loaderHTML);
+        console.log("[Mommates AutoLogin] Loader displayed");
+      }
+
+      // Update loader status message
+      function updateLoaderStatus(message) {
+        const statusElement = document.getElementById("loader-status");
+        if (statusElement) {
+          statusElement.textContent = message;
+        }
+      }
+
+      // Hide and remove loading overlay
+      function hideLoader() {
+        const loader = document.getElementById("mommates-autofill-loader");
+        if (loader) {
+          loader.style.opacity = "0";
+          loader.style.transition = "opacity 0.3s ease";
+          setTimeout(() => {
+            loader.remove();
+            console.log("[Mommates AutoLogin] Loader removed");
+          }, 300);
+        }
+      }
+
       // Check for auto-fill credentials in URL parameters
       function checkForAutoFillCredentials() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -183,6 +281,10 @@ PageProps & WithNonceProps<{}>) {
           console.log("[Mommates AutoLogin] No autofill parameter found in URL");
           return;
         }
+
+        // Show loader immediately when autofill is detected
+        showLoader();
+        updateLoaderStatus("Decoding credentials...");
 
         try {
           // Decode base64 credentials
@@ -194,16 +296,22 @@ PageProps & WithNonceProps<{}>) {
           console.log("[Mommates AutoLogin] Source:", credentials.source);
           console.log("[Mommates AutoLogin] Timestamp:", new Date(credentials.timestamp));
 
+          updateLoaderStatus("Validating credentials...");
+
           // Verify the credentials are recent (within 5 minutes)
           const maxAge = 5 * 60 * 1000; // 5 minutes
           if (Date.now() - credentials.timestamp > maxAge) {
             console.warn("[Mommates AutoLogin] Credentials are too old, ignoring");
+            updateLoaderStatus("Credentials expired");
+            setTimeout(hideLoader, 2000);
             return;
           }
 
           // Verify source
           if (credentials.source !== "calendar-widget") {
             console.warn("[Mommates AutoLogin] Invalid source:", credentials.source);
+            updateLoaderStatus("Invalid source");
+            setTimeout(hideLoader, 2000);
             return;
           }
 
@@ -212,13 +320,19 @@ PageProps & WithNonceProps<{}>) {
 
           if (!email || !password) {
             console.error("[Mommates AutoLogin] Missing email or password in credentials");
+            updateLoaderStatus("Invalid credentials");
+            setTimeout(hideLoader, 2000);
             return;
           }
+
+          updateLoaderStatus("Looking for login form...");
 
           // Fill the login form
           fillLoginForm(email, password);
         } catch (error) {
           console.error("[Mommates AutoLogin] Error decoding credentials:", error);
+          updateLoaderStatus("Error processing credentials");
+          setTimeout(hideLoader, 2000);
         }
       }
 
@@ -277,6 +391,7 @@ PageProps & WithNonceProps<{}>) {
         // If we found both fields, fill them
         if (emailField && passwordField) {
           console.log("[Mommates AutoLogin] Filling form fields with React state update...");
+          updateLoaderStatus("Found login form, filling fields...");
 
           // Function to properly set React input value
           function setReactInputValue(element, value) {
@@ -338,6 +453,7 @@ PageProps & WithNonceProps<{}>) {
           // Try the React-specific approach first
           try {
             console.log("[Mommates AutoLogin] Attempting React state update method...");
+            updateLoaderStatus("Updating form state...");
 
             // Method 1: Direct React fiber manipulation (most reliable)
             function updateReactState(element, value) {
@@ -367,6 +483,7 @@ PageProps & WithNonceProps<{}>) {
             console.log("[Mommates AutoLogin] ✅ React state update method completed");
           } catch (reactError) {
             console.warn("[Mommates AutoLogin] React method failed, trying typing simulation:", reactError);
+            updateLoaderStatus("Simulating user typing...");
 
             // Fallback: Simulate actual typing
             simulateTyping(emailField, email);
@@ -387,8 +504,11 @@ PageProps & WithNonceProps<{}>) {
             // If values didn't stick, try the typing simulation
             if (emailValue !== email || passwordValue !== password) {
               console.warn("[Mommates AutoLogin] Values did not stick, retrying with typing simulation...");
+              updateLoaderStatus("Retrying with typing simulation...");
               simulateTyping(emailField, email);
               setTimeout(() => simulateTyping(passwordField, password), 500);
+            } else {
+              updateLoaderStatus("Form fields populated successfully!");
             }
           }, 1000);
 
@@ -447,23 +567,33 @@ PageProps & WithNonceProps<{}>) {
 
               if (emailValid && passwordValid) {
                 console.log("[Mommates AutoLogin] Validation passed, auto-submitting in 1 second...");
+                updateLoaderStatus("Logging you in...");
                 setTimeout(() => {
                   submitButton.click();
                   console.log("[Mommates AutoLogin] Form auto-submitted");
+                  updateLoaderStatus("Redirecting to your calendar...");
+                  // Hide loader after successful submit
+                  setTimeout(hideLoader, 2000);
                 }, 1000);
               } else {
                 console.warn(
                   "[Mommates AutoLogin] Validation failed, not auto-submitting. User must submit manually."
                 );
+                updateLoaderStatus("Please complete login manually");
+                setTimeout(hideLoader, 3000);
               }
             } else {
               console.log("[Mommates AutoLogin] No submit button found or button is disabled");
+              updateLoaderStatus("Please click login button to continue");
+              setTimeout(hideLoader, 3000);
             }
           }, 3000); // Wait 3 seconds for typing simulation to complete
         } else {
           console.warn("[Mommates AutoLogin] Could not find login form fields");
           console.log("Email field found:", !!emailField);
           console.log("Password field found:", !!passwordField);
+
+          updateLoaderStatus("Login form not ready, retrying...");
 
           // Log all forms and inputs for debugging
           const forms = document.querySelectorAll("form");
