@@ -168,15 +168,36 @@ PageProps & WithNonceProps<{}>) {
   };
 
   const { data, isPending, error } = trpc.viewer.public.ssoConnections.useQuery();
+  useEffect(() => {
+    // Auto-login message handler
+    console.log("doing it");
+    const handleMessage = (event) => {
+      // Your allowed origins
+      const allowedOrigins = "*";
 
-  useEffect(
-    function refactorMeWithoutEffect() {
-      if (error) {
-        setErrorMessage(error.message);
+      if (event.data?.type === "MOMMATES_AUTO_LOGIN") {
+        const { email, password } = event.data;
+
+        // Fill your form fields - adjust these selectors to match your actual form
+        const emailInput = document.querySelector('input[name="email"]');
+        const passwordInput = document.querySelector('input[type="password"]');
+
+        if (emailInput && passwordInput) {
+          emailInput.value = email;
+          passwordInput.value = password;
+
+          // Trigger React events
+          const event = new Event("input", { bubbles: true });
+          emailInput.dispatchEvent(event);
+          passwordInput.dispatchEvent(event);
+        }
       }
-    },
-    [error]
-  );
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   const displaySSOLogin = HOSTED_CAL_FEATURES
     ? true
