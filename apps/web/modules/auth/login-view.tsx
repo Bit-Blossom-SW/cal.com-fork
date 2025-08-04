@@ -169,34 +169,245 @@ PageProps & WithNonceProps<{}>) {
 
   const { data, isPending, error } = trpc.viewer.public.ssoConnections.useQuery();
   useEffect(() => {
-    // Auto-login message handler
-    console.log("doing it");
-    const handleMessage = (event) => {
-      // Your allowed origins
-      const allowedOrigins = "*";
+    (function () {
+      "use strict";
 
-      if (event.data?.type === "MOMMATES_AUTO_LOGIN") {
-        const { email, password } = event.data;
+      console.log("[Mommates AutoLogin] Script loaded");
 
-        // Fill your form fields - adjust these selectors to match your actual form
-        const emailInput = document.querySelector('input[name="email"]');
-        const passwordInput = document.querySelector('input[type="password"]');
+      // Check for auto-fill credentials in URL parameters
+      function checkForAutoFillCredentials() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const autofillParam = urlParams.get("autofill");
 
-        if (emailInput && passwordInput) {
-          emailInput.value = email;
-          passwordInput.value = password;
+        if (!autofillParam) {
+          console.log("[Mommates AutoLogin] No autofill parameter found in URL");
+          return;
+        }
 
-          // Trigger React events
-          const event = new Event("input", { bubbles: true });
-          emailInput.dispatchEvent(event);
-          passwordInput.dispatchEvent(event);
+        try {
+          // Decode base64 credentials
+          const credentialsJson = atob(autofillParam);
+          const credentials = JSON.parse(credentialsJson);
+
+          console.log("[Mommates AutoLogin] Found autofill credentials");
+          console.log("[Mommates AutoLogin] Email:", credentials.email);
+          console.log("[Mommates AutoLogin] Source:", credentials.source);
+          console.log("[Mommates AutoLogin] Timestamp:", new Date(credentials.timestamp));
+
+          // Verify the credentials are recent (within 5 minutes)
+          const maxAge = 5 * 60 * 1000; // 5 minutes
+          if (Date.now() - credentials.timestamp > maxAge) {
+            console.warn("[Mommates AutoLogin] Credentials are too old, ignoring");
+            return;
+          }
+
+          // Verify source
+          if (credentials.source !== "calendar-widget") {
+            console.warn("[Mommates AutoLogin] Invalid source:", credentials.source);
+            return;
+          }
+
+          // Extract credentials
+          const { email, password } = credentials;
+
+          if (!email || !password) {
+            console.error("[Mommates AutoLogin] Missing email or password in credentials");
+            return;
+          }
+
+          // Fill the login form
+          fillLoginForm(email, password);
+        } catch (error) {
+          console.error("[Mommates AutoLogin] Error decoding credentials:", error);
         }
       }
-    };
 
-    window.addEventListener("message", handleMessage);
+      // Function to fill the login form
+      function fillLoginForm(email, password) {
+        console.log("[Mommates AutoLogin] Attempting to fill login form...");
 
-    return () => window.removeEventListener("message", handleMessage);
+        // Try different selectors for email field
+        const emailSelectors = [
+          'input[name="email"]',
+          'input[type="email"]',
+          'input[id="email"]',
+          'input[placeholder*="email" i]',
+          'input[placeholder*="e-mail" i]',
+          'input[autocomplete="email"]',
+          'input[autocomplete="username"]',
+          "#email",
+          '[data-testid="email"]',
+          'input[name="username"]',
+          "#username",
+        ];
+
+        // Try different selectors for password field
+        const passwordSelectors = [
+          'input[name="password"]',
+          'input[type="password"]',
+          'input[id="password"]',
+          'input[placeholder*="password" i]',
+          'input[autocomplete="current-password"]',
+          'input[autocomplete="password"]',
+          "#password",
+          '[data-testid="password"]',
+        ];
+
+        let emailField = null;
+        let passwordField = null;
+
+        // Find email field
+        for (const selector of emailSelectors) {
+          emailField = document.querySelector(selector);
+          if (emailField) {
+            console.log("[Mommates AutoLogin] Found email field with selector:", selector);
+            break;
+          }
+        }
+
+        // Find password field
+        for (const selector of passwordSelectors) {
+          passwordField = document.querySelector(selector);
+          if (passwordField) {
+            console.log("[Mommates AutoLogin] Found password field with selector:", selector);
+            break;
+          }
+        }
+
+        // If we found both fields, fill them
+        if (emailField && passwordField) {
+          console.log("[Mommates AutoLogin] Filling form fields...");
+
+          // For React 16+ we might need to set the native value property
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            "value"
+          ).set;
+
+          // Set email field
+          if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(emailField, email);
+          }
+          emailField.value = email;
+
+          // Set password field
+          if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(passwordField, password);
+          }
+          passwordField.value = password;
+
+          // Trigger various events to ensure React/NextJS form handling works
+          const inputEvent = new Event("input", { bubbles: true });
+          const changeEvent = new Event("change", { bubbles: true });
+          const focusEvent = new Event("focus", { bubbles: true });
+          const blurEvent = new Event("blur", { bubbles: true });
+
+          // Trigger events for email field
+          emailField.dispatchEvent(focusEvent);
+          emailField.dispatchEvent(inputEvent);
+          emailField.dispatchEvent(changeEvent);
+          emailField.dispatchEvent(blurEvent);
+
+          // Trigger events for password field
+          passwordField.dispatchEvent(focusEvent);
+          passwordField.dispatchEvent(inputEvent);
+          passwordField.dispatchEvent(changeEvent);
+          passwordField.dispatchEvent(blurEvent);
+
+          console.log("[Mommates AutoLogin] ✅ Form fields populated successfully");
+
+          // Clean up URL to remove credentials
+          setTimeout(() => {
+            try {
+              const url = new URL(window.location);
+              url.searchParams.delete("autofill");
+              window.history.replaceState({}, document.title, url.toString());
+              console.log("[Mommates AutoLogin] Cleaned credentials from URL");
+            } catch (e) {
+              console.warn("[Mommates AutoLogin] Could not clean URL:", e);
+            }
+          }, 1000);
+
+          // Optional: Try to find and click the submit button
+          setTimeout(() => {
+            const submitSelectors = [
+              'button[type="submit"]',
+              'input[type="submit"]',
+              'button[data-testid="login-button"]',
+              "button.btn-primary",
+              "form button:last-child",
+            ];
+
+            let submitButton = null;
+
+            // Also try finding buttons with specific text
+            const buttons = document.querySelectorAll("button");
+            const loginTexts = ["log in", "login", "sign in", "submit"];
+
+            submitButton = Array.from(buttons).find((btn) => {
+              const text = btn.textContent.toLowerCase().trim();
+              return loginTexts.some((loginText) => text.includes(loginText));
+            });
+
+            // If not found by text, try selectors
+            if (!submitButton) {
+              for (const selector of submitSelectors) {
+                submitButton = document.querySelector(selector);
+                if (submitButton) {
+                  console.log("[Mommates AutoLogin] Found submit button with selector:", selector);
+                  break;
+                }
+              }
+            }
+
+            if (submitButton && !submitButton.disabled) {
+              console.log("[Mommates AutoLogin] Found submit button, auto-submitting in 2 seconds...");
+              setTimeout(() => {
+                submitButton.click();
+                console.log("[Mommates AutoLogin] Form auto-submitted");
+              }, 2000);
+            } else {
+              console.log("[Mommates AutoLogin] No submit button found or button is disabled");
+            }
+          }, 1500);
+        } else {
+          console.warn("[Mommates AutoLogin] Could not find login form fields");
+          console.log("Email field found:", !!emailField);
+          console.log("Password field found:", !!passwordField);
+
+          // Log all forms and inputs for debugging
+          const forms = document.querySelectorAll("form");
+          console.log("Forms found:", forms.length);
+
+          const inputs = document.querySelectorAll("input");
+          console.log("Input fields found:", inputs.length);
+          inputs.forEach((input, i) => {
+            console.log(`Input ${i}:`, {
+              type: input.type,
+              name: input.name,
+              id: input.id,
+              placeholder: input.placeholder,
+              className: input.className,
+            });
+          });
+
+          // Retry after a delay (page might still be loading)
+          setTimeout(() => fillLoginForm(email, password), 2000);
+        }
+      }
+
+      // Check for credentials when DOM is loaded
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", checkForAutoFillCredentials);
+      } else {
+        // DOM already loaded, check immediately
+        checkForAutoFillCredentials();
+      }
+
+      // Also check after a delay in case React takes time to render the form
+      setTimeout(checkForAutoFillCredentials, 1000);
+      setTimeout(checkForAutoFillCredentials, 3000);
+    })();
   }, []);
 
   const displaySSOLogin = HOSTED_CAL_FEATURES
