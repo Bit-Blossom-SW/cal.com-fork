@@ -276,45 +276,121 @@ PageProps & WithNonceProps<{}>) {
 
         // If we found both fields, fill them
         if (emailField && passwordField) {
-          console.log("[Mommates AutoLogin] Filling form fields...");
+          console.log("[Mommates AutoLogin] Filling form fields with React state update...");
 
-          // For React 16+ we might need to set the native value property
-          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-            window.HTMLInputElement.prototype,
-            "value"
-          ).set;
+          // Function to properly set React input value
+          function setReactInputValue(element, value) {
+            // Get React's internal input setter
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+              window.HTMLInputElement.prototype,
+              "value"
+            ).set;
 
-          // Set email field
-          if (nativeInputValueSetter) {
-            nativeInputValueSetter.call(emailField, email);
+            // Set the value using React's setter
+            nativeInputValueSetter.call(element, value);
+
+            // Create and dispatch the input event that React listens for
+            const inputEvent = new Event("input", { bubbles: true });
+
+            // For React 16+, we need to set the simulated flag
+            inputEvent.simulated = true;
+
+            // Dispatch the event to trigger React's onChange
+            element.dispatchEvent(inputEvent);
+
+            // Also trigger other events that might be needed
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+            element.dispatchEvent(new Event("blur", { bubbles: true }));
           }
-          emailField.value = email;
 
-          // Set password field
-          if (nativeInputValueSetter) {
-            nativeInputValueSetter.call(passwordField, password);
+          // Function to simulate user typing (more reliable for React)
+          function simulateTyping(element, value) {
+            // Focus the element first
+            element.focus();
+
+            // Clear existing value
+            element.value = "";
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+
+            // Type each character with a small delay
+            let i = 0;
+            const typeChar = () => {
+              if (i < value.length) {
+                element.value = value.substring(0, i + 1);
+
+                // Trigger input event for each character
+                const inputEvent = new Event("input", { bubbles: true });
+                inputEvent.simulated = true;
+                element.dispatchEvent(inputEvent);
+
+                i++;
+                setTimeout(typeChar, 10); // 10ms delay between characters
+              } else {
+                // Finished typing, trigger final events
+                element.dispatchEvent(new Event("change", { bubbles: true }));
+                element.dispatchEvent(new Event("blur", { bubbles: true }));
+              }
+            };
+
+            setTimeout(typeChar, 100); // Start typing after 100ms
           }
-          passwordField.value = password;
 
-          // Trigger various events to ensure React/NextJS form handling works
-          const inputEvent = new Event("input", { bubbles: true });
-          const changeEvent = new Event("change", { bubbles: true });
-          const focusEvent = new Event("focus", { bubbles: true });
-          const blurEvent = new Event("blur", { bubbles: true });
+          // Try the React-specific approach first
+          try {
+            console.log("[Mommates AutoLogin] Attempting React state update method...");
 
-          // Trigger events for email field
-          emailField.dispatchEvent(focusEvent);
-          emailField.dispatchEvent(inputEvent);
-          emailField.dispatchEvent(changeEvent);
-          emailField.dispatchEvent(blurEvent);
+            // Method 1: Direct React fiber manipulation (most reliable)
+            function updateReactState(element, value) {
+              const reactProps = Object.keys(element).find((key) => key.startsWith("__reactProps"));
+              const reactInternalInstance =
+                element._reactInternalFiber ||
+                element._reactInternalInstance ||
+                Object.keys(element).find((key) => key.startsWith("__reactInternalInstance"));
 
-          // Trigger events for password field
-          passwordField.dispatchEvent(focusEvent);
-          passwordField.dispatchEvent(inputEvent);
-          passwordField.dispatchEvent(changeEvent);
-          passwordField.dispatchEvent(blurEvent);
+              if (reactProps && element[reactProps]) {
+                // Update React props directly
+                if (element[reactProps].onChange) {
+                  element.value = value;
+                  element[reactProps].onChange({ target: element, currentTarget: element });
+                }
+              }
+            }
 
-          console.log("[Mommates AutoLogin] ✅ Form fields populated successfully");
+            // Set values using multiple methods
+            setReactInputValue(emailField, email);
+            setReactInputValue(passwordField, password);
+
+            // Also try direct React state update
+            updateReactState(emailField, email);
+            updateReactState(passwordField, password);
+
+            console.log("[Mommates AutoLogin] ✅ React state update method completed");
+          } catch (reactError) {
+            console.warn("[Mommates AutoLogin] React method failed, trying typing simulation:", reactError);
+
+            // Fallback: Simulate actual typing
+            simulateTyping(emailField, email);
+            setTimeout(() => simulateTyping(passwordField, password), 500);
+          }
+
+          // Additional validation check
+          setTimeout(() => {
+            const emailValue = emailField.value;
+            const passwordValue = passwordField.value;
+
+            console.log("[Mommates AutoLogin] Validation check:");
+            console.log("Email field value:", emailValue);
+            console.log("Password field value length:", passwordValue.length);
+            console.log("Email field valid:", emailField.checkValidity?.() || "unknown");
+            console.log("Password field valid:", passwordField.checkValidity?.() || "unknown");
+
+            // If values didn't stick, try the typing simulation
+            if (emailValue !== email || passwordValue !== password) {
+              console.warn("[Mommates AutoLogin] Values did not stick, retrying with typing simulation...");
+              simulateTyping(emailField, email);
+              setTimeout(() => simulateTyping(passwordField, password), 500);
+            }
+          }, 1000);
 
           // Clean up URL to remove credentials
           setTimeout(() => {
@@ -328,7 +404,7 @@ PageProps & WithNonceProps<{}>) {
             }
           }, 1000);
 
-          // Optional: Try to find and click the submit button
+          // Optional: Try to find and click the submit button (wait longer for typing simulation)
           setTimeout(() => {
             const submitSelectors = [
               'button[type="submit"]',
@@ -361,15 +437,29 @@ PageProps & WithNonceProps<{}>) {
             }
 
             if (submitButton && !submitButton.disabled) {
-              console.log("[Mommates AutoLogin] Found submit button, auto-submitting in 2 seconds...");
-              setTimeout(() => {
-                submitButton.click();
-                console.log("[Mommates AutoLogin] Form auto-submitted");
-              }, 2000);
+              // Final validation check before submitting
+              const emailValid = emailField.value === email;
+              const passwordValid = passwordField.value === password;
+
+              console.log("[Mommates AutoLogin] Pre-submit validation:");
+              console.log("Email correct:", emailValid);
+              console.log("Password correct:", passwordValid);
+
+              if (emailValid && passwordValid) {
+                console.log("[Mommates AutoLogin] Validation passed, auto-submitting in 1 second...");
+                setTimeout(() => {
+                  submitButton.click();
+                  console.log("[Mommates AutoLogin] Form auto-submitted");
+                }, 1000);
+              } else {
+                console.warn(
+                  "[Mommates AutoLogin] Validation failed, not auto-submitting. User must submit manually."
+                );
+              }
             } else {
               console.log("[Mommates AutoLogin] No submit button found or button is disabled");
             }
-          }, 1500);
+          }, 3000); // Wait 3 seconds for typing simulation to complete
         } else {
           console.warn("[Mommates AutoLogin] Could not find login form fields");
           console.log("Email field found:", !!emailField);
