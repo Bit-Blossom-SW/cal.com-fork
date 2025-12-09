@@ -223,6 +223,10 @@ module.exports = {
           from: { opacity: 0, transform: "translateY(10px)" },
           to: { opacity: 1, transform: "none" },
         },
+        "fade-in": {
+          from: { opacity: 0, transform: "translateY(-5px)" },
+          to: { opacity: 1, transform: "translateY(0)" },
+        },
         spinning: {
           "100%": { transform: "rotate(360deg)" },
         },
@@ -238,6 +242,7 @@ module.exports = {
       animation: {
         "fade-in-up": "fade-in-up 600ms var(--animation-delay, 0ms) cubic-bezier(.21,1.02,.73,1) forwards",
         "fade-in-bottom": "fade-in-bottom cubic-bezier(.21,1.02,.73,1) forwards",
+        "fade-in": "fade-in 300ms ease forwards",
         spinning: "spinning 0.75s linear infinite",
         drawerSlideLeftAndFade: "drawerSlideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         drawerSlideRightAndFade: "drawerSlideRightAndFade 150ms ease-in",
