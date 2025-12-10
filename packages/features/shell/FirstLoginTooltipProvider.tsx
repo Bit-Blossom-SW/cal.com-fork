@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState, useEffect, useCallback } from "react";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -41,14 +42,21 @@ function saveTooltipState(state: TooltipState): void {
   }
 }
 
+interface QuickLink {
+  label: string;
+  href: string;
+}
+
 function WelcomeTooltip({
   config,
   onDismiss,
   viewCount,
+  quickLinks,
 }: {
   config: TooltipConfig;
   onDismiss: () => void;
   viewCount: number;
+  quickLinks: QuickLink[];
 }) {
   return (
     <div
@@ -79,6 +87,21 @@ function WelcomeTooltip({
         {/* Content */}
         <p className="mb-3 text-[13px] leading-relaxed text-white">{config.content}</p>
 
+        {/* Quick Links */}
+        {quickLinks.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={onDismiss}
+                className="inline-flex items-center rounded-md bg-blue-500 px-3 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-blue-600">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
+
         {/* View count */}
         <div className="text-center text-[11px] text-slate-400">View count: {viewCount}</div>
       </div>
@@ -91,7 +114,7 @@ function HelpButton({ onClick, isActive }: { onClick: () => void; isActive: bool
     <button
       onClick={onClick}
       className={classNames(
-        "fixed right-5 top-5 z-[9999] flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95",
+        "fixed right-5 top-[70px] z-[9999] flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl active:scale-95",
         isActive ? "bg-blue-600" : "bg-blue-500"
       )}
       aria-label="Show help tooltips">
@@ -112,6 +135,17 @@ export function FirstLoginTooltipProvider({ children }: { children: React.ReactN
       t("first_login_welcome_message") ||
       "Welcome to your scheduling dashboard! Here you can create and manage your event types, view your bookings, and customize your availability.",
   };
+
+  const quickLinks: QuickLink[] = [
+    {
+      label: t("calendar_sync") || "Calendar Sync",
+      href: "/apps",
+    },
+    {
+      label: t("working_hours") || "Working Hours",
+      href: "/availability",
+    },
+  ];
 
   useEffect(() => {
     const state = getTooltipState();
@@ -161,7 +195,12 @@ export function FirstLoginTooltipProvider({ children }: { children: React.ReactN
       {children}
       <HelpButton onClick={handleHelpClick} isActive={showWelcomeTooltip} />
       {showWelcomeTooltip && (
-        <WelcomeTooltip config={tooltipConfig} onDismiss={handleDismiss} viewCount={viewCount} />
+        <WelcomeTooltip
+          config={tooltipConfig}
+          onDismiss={handleDismiss}
+          viewCount={viewCount}
+          quickLinks={quickLinks}
+        />
       )}
     </>
   );

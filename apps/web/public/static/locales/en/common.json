@@ -353,6 +353,8 @@
   "welcome_to_calcom": "Welcome to {{appName}}",
   "welcome_instructions": "Tell us what to call you and let us know what timezone you're in. You'll be able to edit this later.",
   "first_login_welcome_message": "Welcome to your scheduling dashboard! Here you can create and manage your event types, view your bookings, and customize your availability.",
+  "calendar_sync": "Calendar Sync",
+  "working_hours": "Working Hours",
   "connect_caldav": "Connect to CalDav (Beta)",
   "connect_ics_feed": "Connect to an ICS Feed",
   "connect": "Connect",
