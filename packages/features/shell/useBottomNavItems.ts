@@ -78,10 +78,5 @@ export function useBottomNavItems({
           icon: "lock",
         }
       : null,
-    {
-      name: "settings",
-      href: user?.org ? `/settings/organizations/profile` : "/settings/my-account/profile",
-      icon: "settings",
-    },
   ].filter(Boolean) as NavigationItemType[];
 }

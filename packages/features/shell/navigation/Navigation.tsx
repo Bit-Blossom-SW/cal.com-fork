@@ -7,7 +7,6 @@ import {
   useOrgBranding,
   type OrganizationBranding,
 } from "@calcom/features/ee/organizations/context/provider";
-import { KBarTrigger } from "@calcom/features/kbar/Kbar";
 import classNames from "@calcom/ui/classNames";
 
 import { TeamInviteBadge } from "../TeamInviteBadge";
@@ -86,19 +85,6 @@ const getNavigationItems = (orgBranding: OrganizationBranding): NavigationItemTy
     name: MORE_SEPARATOR_NAME,
     href: "/more",
     icon: "ellipsis",
-  },
-  {
-    name: "routing",
-    href: "/routing",
-    icon: "split",
-    isCurrent: ({ pathname }) => pathname?.startsWith("/routing") ?? false,
-    moreOnMobile: true,
-  },
-  {
-    name: "workflows",
-    href: "/workflows",
-    icon: "zap",
-    moreOnMobile: true,
   },
   {
     name: "insights",
@@ -201,9 +187,6 @@ export const Navigation = ({ isPlatformNavigation = false }: { isPlatformNavigat
       {desktopNavigationItems.map((item) => (
         <NavigationItem key={item.name} item={item} />
       ))}
-      <div className="text-subtle mt-0.5 lg:hidden">
-        <KBarTrigger />
-      </div>
     </nav>
   );
 };
