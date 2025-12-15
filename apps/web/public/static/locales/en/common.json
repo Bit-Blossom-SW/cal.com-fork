@@ -381,7 +381,7 @@
   "needs_to_be_confirmed_or_rejected_recurring": "Your recurring meeting still needs to be confirmed or rejected.",
   "user_needs_to_confirm_or_reject_booking": "{{user}} still needs to confirm or reject the booking.",
   "user_needs_to_confirm_or_reject_booking_recurring": "{{user}} still needs to confirm or reject each booking of the recurring meeting.",
-  "meeting_is_scheduled": "This meeting is scheduled",
+  "meeting_is_scheduled": "This swap has been requested",
   "meeting_is_scheduled_recurring": "The recurring events are scheduled",
   "booking_submitted": "Your booking has been submitted",
   "booking_submitted_recurring": "Your recurring meeting has been submitted",
