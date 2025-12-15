@@ -105,9 +105,15 @@ export const AvailabilitySettingsWebWrapper = ({
     },
   });
 
+  // Override schedule name to display "Availability" instead of the stored name
+  const displaySchedule = {
+    ...schedule,
+    name: "Availability",
+  };
+
   return (
     <AvailabilitySettings
-      schedule={schedule}
+      schedule={displaySchedule}
       travelSchedules={isDefaultSchedule ? travelSchedules || [] : []}
       isDeleting={deleteMutation.isPending}
       isLoading={false}
@@ -115,7 +121,8 @@ export const AvailabilitySettingsWebWrapper = ({
       enableOverrides={true}
       timeFormat={timeFormat}
       weekStart={me.data?.weekStart || "Sunday"}
-      backPath={fromEventType ? true : "/availability"}
+      backPath={fromEventType ? true : undefined}
+      disableEditableHeading={true}
       handleDelete={() => {
         scheduleId && deleteMutation.mutate({ scheduleId });
       }}

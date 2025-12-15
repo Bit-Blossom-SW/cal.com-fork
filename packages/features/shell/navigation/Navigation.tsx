@@ -25,8 +25,9 @@ const getNavigationItems = (orgBranding: OrganizationBranding): NavigationItemTy
   },
   {
     name: "availability",
-    href: "/availability",
+    href: "/availability/3",
     icon: "clock",
+    isCurrent: ({ pathname }) => pathname?.startsWith("/availability") ?? false,
   },
   ...(orgBranding
     ? [
