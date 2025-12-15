@@ -9,18 +9,13 @@ import {
 } from "@calcom/features/ee/organizations/context/provider";
 import classNames from "@calcom/ui/classNames";
 
-import { TeamInviteBadge } from "../TeamInviteBadge";
+// TeamInviteBadge removed - teams nav item hidden
 import type { NavigationItemType } from "./NavigationItem";
 import { NavigationItem, MobileNavigationItem, MobileNavigationMoreItem } from "./NavigationItem";
 
 export const MORE_SEPARATOR_NAME = "more";
 
 const getNavigationItems = (orgBranding: OrganizationBranding): NavigationItemType[] => [
-  {
-    name: "event_types_page_title",
-    href: "/event-types",
-    icon: "link",
-  },
   {
     name: "bookings",
     href: "/bookings/upcoming",
@@ -44,42 +39,11 @@ const getNavigationItems = (orgBranding: OrganizationBranding): NavigationItemTy
       ]
     : []),
   {
-    name: "teams",
-    href: "/teams",
-    icon: "users",
-    badge: <TeamInviteBadge />,
-    moreOnMobile: true,
-  },
-  {
     name: "apps",
-    href: "/apps",
+    href: "/apps/categories/calendar",
     icon: "grid-3x3",
     moreOnMobile: true,
-    isCurrent: ({ pathname: path, item }) => {
-      // During Server rendering path is /v2/apps but on client it becomes /apps(weird..)
-      return (path?.startsWith(item.href) ?? false) && !(path?.includes("routing-forms/") ?? false);
-    },
-    child: [
-      {
-        name: "app_store",
-        href: "/apps",
-        isCurrent: ({ pathname: path, item }) => {
-          // During Server rendering path is /v2/apps but on client it becomes /apps(weird..)
-          return (
-            (path?.startsWith(item.href) ?? false) &&
-            !(path?.includes("routing-forms/") ?? false) &&
-            !(path?.includes("/installed") ?? false)
-          );
-        },
-      },
-      {
-        name: "installed_apps",
-        href: "/apps/installed/calendar",
-        isCurrent: ({ pathname: path }) =>
-          (path?.startsWith("/apps/installed/") ?? false) ||
-          (path?.startsWith("/v2/apps/installed/") ?? false),
-      },
-    ],
+    isCurrent: ({ pathname: path }) => path?.startsWith("/apps") ?? false,
   },
   {
     name: MORE_SEPARATOR_NAME,
