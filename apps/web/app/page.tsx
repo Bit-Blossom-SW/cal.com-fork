@@ -11,7 +11,7 @@ const RedirectPage = async () => {
   if (!session?.user?.id) {
     redirect("/auth/login");
   }
-  redirect("/insights");
+  redirect("/availability/3");
 };
 
 export default RedirectPage;
