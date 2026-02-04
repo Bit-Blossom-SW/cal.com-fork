@@ -4,6 +4,15 @@ import type { AppCategories } from "@calcom/prisma/enums";
 
 export type CategoryDataProps = NonNullable<Awaited<ReturnType<typeof getStaticProps>>>;
 
+// Only show these calendar apps on the /apps/categories/calendar page
+const ALLOWED_CALENDAR_SLUGS = [
+  "apple-calendar",
+  "google-calendar",
+  "exchange2013-calendar", // Microsoft Exchange
+  "office365-calendar", // Outlook Calendar
+  "exchange2016-calendar", // Microsoft Exchange 2016 Calendar
+];
+
 export const getStaticProps = async (category: AppCategories) => {
   const appQuery = await prisma.app.findMany({
     where: {
@@ -20,7 +29,13 @@ export const getStaticProps = async (category: AppCategories) => {
 
   const appStore = await getAppRegistry();
 
-  const apps = appStore.filter((app) => dbAppsSlugs.includes(app.slug));
+  let apps = appStore.filter((app) => dbAppsSlugs.includes(app.slug));
+
+  // Filter calendar apps to only show allowed ones
+  if (category === "calendar") {
+    apps = apps.filter((app) => ALLOWED_CALENDAR_SLUGS.includes(app.slug));
+  }
+
   return {
     apps,
     category,
