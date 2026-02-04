@@ -9,7 +9,6 @@ const ALLOWED_CALENDAR_SLUGS = [
   "apple-calendar",
   "google-calendar",
   "exchange2013-calendar", // Microsoft Exchange
-  "office365-calendar", // Outlook Calendar
   "exchange2016-calendar", // Microsoft Exchange 2016 Calendar
 ];
 
