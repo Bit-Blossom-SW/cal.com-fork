@@ -12,6 +12,7 @@ cmds = ["yarn install --frozen-lockfile"]
 
 [phases.build]
 cmds = [
+  "yarn prisma migrate deploy",
   "NODE_OPTIONS='--max-old-space-size=8192' yarn workspace @calcom/web build"
 ]
 
