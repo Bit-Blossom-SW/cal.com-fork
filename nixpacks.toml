@@ -16,4 +16,4 @@ cmds = [
 ]
 
 [start]
-cmd = "echo '=== Syncing Database Schema ===' && yarn prisma db push && echo '=== Schema Sync Complete ===' && yarn workspace @calcom/web start"
+cmd = "yarn workspace @calcom/web start"
