@@ -48,6 +48,9 @@ const GoogleIcon = () => (
 
 const LoginSidebar = () => (
   <div className="text-emphasis">
+    <div className="mb-6 flex justify-center">
+      <img src="/bear_mm.png" alt="Mommates" className="h-24 w-24 rounded-full" />
+    </div>
     <h3 className="font-cal mb-4 text-xl font-semibold">Welcome to Mommates</h3>
     <p className="text-default mb-6 text-sm leading-relaxed">
       The Mommates app connects likeminded moms using calendar synchronization and other community tools. Join
@@ -55,7 +58,7 @@ const LoginSidebar = () => (
       families.
     </p>
     <h4 className="font-cal mb-3 text-lg font-medium">How it works</h4>
-    <ol className="text-default list-decimal space-y-2 pl-5 text-sm">
+    <ol className="text-default mb-6 list-decimal space-y-2 pl-5 text-sm">
       <li>Connect and sync your calendar.</li>
       <li>Ask your village for some help.</li>
       <li>Choose a mom with availability.</li>
@@ -63,6 +66,17 @@ const LoginSidebar = () => (
       <li>Schedule a swap using our calendar integration.</li>
       <li>Exchange points.</li>
     </ol>
+    <div className="border-subtle border-t pt-4">
+      <div className="text-subtle flex justify-center space-x-4 text-xs">
+        <Link href="/privacy" className="hover:text-emphasis hover:underline">
+          Privacy Policy
+        </Link>
+        <span>|</span>
+        <Link href="/terms" className="hover:text-emphasis hover:underline">
+          Terms of Service
+        </Link>
+      </div>
+    </div>
   </div>
 );
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
