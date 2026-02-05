@@ -45,6 +45,26 @@ interface LoginValues {
 const GoogleIcon = () => (
   <img className="text-subtle mr-2 h-4 w-4" src="/google-icon-colored.svg" alt="Continue with Google Icon" />
 );
+
+const LoginSidebar = () => (
+  <div className="text-emphasis">
+    <h3 className="font-cal mb-4 text-xl font-semibold">Welcome to Mommates</h3>
+    <p className="text-default mb-6 text-sm leading-relaxed">
+      The Mommates app connects likeminded moms using calendar synchronization and other community tools. Join
+      thousands of moms building a new way to support each other by transforming the way childcare works for
+      families.
+    </p>
+    <h4 className="font-cal mb-3 text-lg font-medium">How it works</h4>
+    <ol className="text-default list-decimal space-y-2 pl-5 text-sm">
+      <li>Connect and sync your calendar.</li>
+      <li>Ask your village for some help.</li>
+      <li>Choose a mom with availability.</li>
+      <li>Meet the family.</li>
+      <li>Schedule a swap using our calendar integration.</li>
+      <li>Exchange points.</li>
+    </ol>
+  </div>
+);
 export type PageProps = inferSSRProps<typeof getServerSideProps>;
 export default function Login({
   csrfToken,
@@ -639,6 +659,7 @@ PageProps & WithNonceProps<{}>) {
       <AuthContainer
         showLogo
         heading={twoFactorRequired ? t("2fa_code") : t("welcome_back")}
+        sidebar={!twoFactorRequired ? <LoginSidebar /> : undefined}
         footerText={
           twoFactorRequired
             ? !totpEmail
