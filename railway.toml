@@ -19,7 +19,7 @@ CALCOM_ENV = "production"
 PORT = "3000"
 
 [services.build]
-buildCommand = "yarn install && yarn prisma migrate deploy && yarn build"
+buildCommand = "yarn install && yarn build"
 startCommand = "yarn workspace @calcom/web start"
 
 [services.deploy]
