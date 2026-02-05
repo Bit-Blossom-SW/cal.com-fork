@@ -16,4 +16,4 @@ cmds = [
 ]
 
 [start]
-cmd = "yarn prisma migrate deploy && yarn workspace @calcom/web start"
+cmd = "echo '=== Running Prisma Migrations ===' && yarn prisma migrate deploy && echo '=== Migrations Complete ===' && yarn workspace @calcom/web start"
