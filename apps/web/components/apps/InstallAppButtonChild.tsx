@@ -40,7 +40,7 @@ export const InstallAppButtonChild = ({
       disabled={shouldDisableInstallation}
       color="primary"
       size="base">
-      {multiInstall ? t("install_another") : t("install_app")}
+      {multiInstall ? t("install_another") : t("connect")}
     </Button>
   );
 };

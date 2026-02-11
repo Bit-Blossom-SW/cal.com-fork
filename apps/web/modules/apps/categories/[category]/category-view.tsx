@@ -20,7 +20,9 @@ export default function Apps({ apps, category }: CategoryDataProps) {
         heading={
           <>
             {isLocaleReady ? (
-              category ? (
+              category === "calendar" ? (
+                t("connect_your_calendar")
+              ) : category ? (
                 t("category_apps", { category: category[0].toUpperCase() + category?.slice(1) })
               ) : (
                 t("app_store")

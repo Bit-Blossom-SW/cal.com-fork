@@ -40,7 +40,7 @@ const getNavigationItems = (orgBranding: OrganizationBranding): NavigationItemTy
       ]
     : []),
   {
-    name: "apps",
+    name: "calendars",
     href: "/apps/categories/calendar",
     icon: "grid-3x3",
     moreOnMobile: true,
