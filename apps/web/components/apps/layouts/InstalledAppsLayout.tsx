@@ -9,7 +9,10 @@ export default function InstalledAppsLayout({
   ...rest
 }: { children: React.ReactNode } & ComponentProps<typeof Shell>) {
   return (
-    <Shell {...rest} title="Connected Calendars" description="Manage your connected calendars">
+    <Shell
+      {...rest}
+      title="Connected Calendars"
+      description="Manage your connected calendars or change settings">
       <AppCategoryNavigation baseURL="/apps/installed" containerClassname="min-w-0 w-full">
         {children}
       </AppCategoryNavigation>

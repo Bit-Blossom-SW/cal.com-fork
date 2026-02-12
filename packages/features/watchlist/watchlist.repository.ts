@@ -21,7 +21,7 @@ export class WatchlistRepository implements IWatchlistRepository {
       return emailInWatchlist;
     } catch (err) {
       captureException(err);
-      throw err;
+      return null;
     }
   }
 
@@ -36,7 +36,7 @@ export class WatchlistRepository implements IWatchlistRepository {
       return domainInWatchWatchlist;
     } catch (err) {
       captureException(err);
-      throw err;
+      return null;
     }
   }
 
@@ -91,7 +91,7 @@ export class WatchlistRepository implements IWatchlistRepository {
       return blockedRecords;
     } catch (err) {
       captureException(err);
-      throw err;
+      return [];
     }
   }
 }

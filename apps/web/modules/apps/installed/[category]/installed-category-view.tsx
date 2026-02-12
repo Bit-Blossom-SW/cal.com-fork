@@ -229,7 +229,9 @@ export default function InstalledApps({ category }: PageProps) {
 
   return (
     <>
-      <InstalledAppsLayout heading="Connected Calendars" subtitle="Manage your connected calendars">
+      <InstalledAppsLayout
+        heading="Connected Calendars"
+        subtitle="Manage your connected calendars or change settings">
         {categoryList.includes(category) && (
           <IntegrationsContainer handleDisconnect={handleDisconnect} variant={category} />
         )}
