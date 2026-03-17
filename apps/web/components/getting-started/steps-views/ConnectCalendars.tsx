@@ -61,22 +61,27 @@ const ConnectedCalendars = (props: IConnectCalendarsProps) => {
           </>
         )}
 
-      {/* Connect calendars list */}
+      {/* Connect calendars list — limited to Google, Apple, and Exchange */}
       {firstCalendar === undefined && queryIntegrations.data && queryIntegrations.data.items.length > 0 && (
         <List className="bg-default divide-subtle border-subtle mx-1 divide-y rounded-md border p-0 dark:bg-black sm:mx-0">
           {queryIntegrations.data &&
-            queryIntegrations.data.items.map((item) => (
-              <li key={item.title}>
-                {item.title && item.logo && (
-                  <AppConnectionItem
-                    type={item.type}
-                    title={item.title}
-                    description={item.description}
-                    logo={item.logo}
-                  />
-                )}
-              </li>
-            ))}
+            queryIntegrations.data.items
+              .filter((item) => {
+                const slug = item.type?.toLowerCase() || "";
+                return slug.includes("google") || slug.includes("apple") || slug.includes("exchange");
+              })
+              .map((item) => (
+                <li key={item.title}>
+                  {item.title && item.logo && (
+                    <AppConnectionItem
+                      type={item.type}
+                      title={item.title}
+                      description={item.description}
+                      logo={item.logo}
+                    />
+                  )}
+                </li>
+              ))}
         </List>
       )}
 

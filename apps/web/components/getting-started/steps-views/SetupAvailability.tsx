@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import Schedule from "@calcom/features/schedules/components/Schedule";
@@ -19,7 +20,7 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
   const { defaultScheduleId } = props;
 
   const { t } = useLocale();
-  const { nextStep } = props;
+  const router = useRouter();
 
   const scheduleId = defaultScheduleId === null ? undefined : defaultScheduleId;
   const queryAvailability = trpc.viewer.availability.schedule.get.useQuery(
@@ -35,12 +36,19 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
     },
   });
 
+  // Mark onboarding as complete after saving availability (this is now the final step)
+  const completeOnboarding = trpc.viewer.updateProfile.useMutation({
+    onSuccess: () => {
+      router.push("/event-types");
+    },
+  });
+
   const mutationOptions = {
     onError: (error: TRPCClientErrorLike<AppRouter>) => {
       throw new Error(error.message);
     },
     onSuccess: () => {
-      nextStep();
+      completeOnboarding.mutate({ completedOnboarding: true });
     },
   };
   const createSchedule = trpc.viewer.availability.schedule.create.useMutation(mutationOptions);
@@ -81,7 +89,7 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
           className="mt-2 w-full justify-center p-2 text-sm sm:mt-8"
           loading={availabilityForm.formState.isSubmitting}
           disabled={availabilityForm.formState.isSubmitting}>
-          {t("next_step_text")}
+          {t("finish") || "Complete Setup"}
         </Button>
       </div>
     </Form>

@@ -21,19 +21,11 @@ import { Icon } from "@calcom/ui/components/icon";
 import type { getServerSideProps } from "@lib/getting-started/[[...step]]/getServerSideProps";
 
 import { ConnectedCalendars } from "@components/getting-started/steps-views/ConnectCalendars";
-import { ConnectedVideoStep } from "@components/getting-started/steps-views/ConnectedVideoStep";
 import { SetupAvailability } from "@components/getting-started/steps-views/SetupAvailability";
-import UserProfile from "@components/getting-started/steps-views/UserProfile";
 import { UserSettings } from "@components/getting-started/steps-views/UserSettings";
 
 const INITIAL_STEP = "user-settings";
-const BASE_STEPS = [
-  "user-settings",
-  "connected-calendar",
-  "connected-video",
-  "setup-availability",
-  "user-profile",
-] as const;
+const BASE_STEPS = ["user-settings", "connected-calendar", "setup-availability"] as const;
 
 type StepType = (typeof BASE_STEPS)[number];
 
@@ -53,20 +45,11 @@ const getStepsAndHeadersForUser = (t: TFunction) => {
       skipText: t("connect_calendar_later"),
     },
     {
-      title: t("connect_your_video_app"),
-      subtitle: [t("connect_your_video_app_instructions")],
-      skipText: t("set_up_later"),
-    },
-    {
       title: t("set_availability"),
       subtitle: [
         t("set_availability_getting_started_subtitle_1"),
         t("set_availability_getting_started_subtitle_2"),
       ],
-    },
-    {
-      title: t("nearly_there"),
-      subtitle: [t("nearly_there_instructions")],
     },
   ];
 
@@ -78,9 +61,7 @@ const getStepsAndHeadersForUser = (t: TFunction) => {
 
 const stepRouteSchema = z.object({
   step: z
-    .array(
-      z.enum(["user-settings", "setup-availability", "user-profile", "connected-calendar", "connected-video"])
-    )
+    .array(z.enum(["user-settings", "connected-calendar", "setup-availability"]))
     .default([INITIAL_STEP]),
   from: z.string().optional(),
 });
@@ -168,14 +149,9 @@ const OnboardingPage = (props: PageProps) => {
                   <ConnectedCalendars nextStep={goToNextStep} isPageLoading={isNextStepLoading} />
                 )}
 
-                {currentStep === "connected-video" && (
-                  <ConnectedVideoStep nextStep={goToNextStep} isPageLoading={isNextStepLoading} />
-                )}
-
                 {currentStep === "setup-availability" && (
                   <SetupAvailability nextStep={goToNextStep} defaultScheduleId={user.defaultScheduleId} />
                 )}
-                {currentStep === "user-profile" && <UserProfile />}
               </Suspense>
             </StepCard>
 
