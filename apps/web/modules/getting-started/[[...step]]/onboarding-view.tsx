@@ -7,7 +7,6 @@ import { Suspense, useTransition } from "react";
 import { Toaster } from "sonner";
 import { z } from "zod";
 
-import { APP_NAME } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { useParamsWithFallback } from "@calcom/lib/hooks/useParamsWithFallback";
 import { trpc } from "@calcom/trpc";
@@ -36,8 +35,11 @@ const getStepsAndHeadersForUser = (t: TFunction) => {
     skipText?: string;
   }[] = [
     {
-      title: t("welcome_to_cal_header", { appName: APP_NAME }),
-      subtitle: [t("we_just_need_basic_info"), t("edit_form_later_subtitle")],
+      title: "Welcome to the Mommates Scheduler!",
+      subtitle: [
+        "We just need to confirm some details regarding how you'll be identified to other moms.",
+        "You can edit this later.",
+      ],
     },
     {
       title: t("connect_your_calendar"),
