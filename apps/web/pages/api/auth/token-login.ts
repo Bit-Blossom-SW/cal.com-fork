@@ -172,7 +172,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Redirect to the calendar dashboard
   const redirectUrl = req.query.redirect as string;
-  const safeRedirect = redirectUrl && redirectUrl.startsWith("/") ? redirectUrl : "/event-types";
+  const safeRedirect = redirectUrl && redirectUrl.startsWith("/") ? redirectUrl : "/bookings/upcoming";
 
   return res.redirect(302, safeRedirect);
 }

@@ -41,7 +41,7 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
     onSuccess: () => {
       // Force full page reload so the server-side session picks up completedOnboarding: true
       // (router.push would do a client-side nav and the old session redirects back to /getting-started)
-      window.location.href = "/event-types";
+      window.location.href = "/bookings/upcoming";
     },
   });
 
