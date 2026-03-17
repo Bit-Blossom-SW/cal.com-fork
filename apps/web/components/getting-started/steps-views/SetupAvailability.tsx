@@ -37,7 +37,7 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
   });
 
   // Mark onboarding as complete after saving availability (this is now the final step)
-  const completeOnboarding = trpc.viewer.updateProfile.useMutation({
+  const completeOnboarding = trpc.viewer.me.updateProfile.useMutation({
     onSuccess: () => {
       router.push("/event-types");
     },
