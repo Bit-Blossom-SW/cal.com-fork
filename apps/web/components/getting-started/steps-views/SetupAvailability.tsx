@@ -39,7 +39,9 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
   // Mark onboarding as complete after saving availability (this is now the final step)
   const completeOnboarding = trpc.viewer.me.updateProfile.useMutation({
     onSuccess: () => {
-      router.push("/event-types");
+      // Force full page reload so the server-side session picks up completedOnboarding: true
+      // (router.push would do a client-side nav and the old session redirects back to /getting-started)
+      window.location.href = "/event-types";
     },
   });
 
