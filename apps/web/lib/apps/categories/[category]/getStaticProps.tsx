@@ -8,6 +8,7 @@ export type CategoryDataProps = NonNullable<Awaited<ReturnType<typeof getStaticP
 const ALLOWED_CALENDAR_SLUGS = [
   "apple-calendar",
   "google-calendar",
+  "office365-calendar", // Outlook Calendar (Microsoft 365)
   "exchange2013-calendar", // Microsoft Exchange
   "exchange2016-calendar", // Microsoft Exchange 2016 Calendar
 ];
