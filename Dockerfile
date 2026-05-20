@@ -6,7 +6,7 @@ ENV YARN_ENABLE_IMMUTABLE_INSTALLS=false
 ENV HUSKY=0
 
 FROM base AS deps
-COPY package.json yarn.lock .yarnrc.yml turbo.json ./
+COPY package.json yarn.lock .yarnrc.yml turbo.json i18n.json ./
 COPY .yarn ./.yarn
 COPY apps ./apps
 COPY packages ./packages
