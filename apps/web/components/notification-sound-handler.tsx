@@ -20,6 +20,9 @@ export function NotificationSoundHandler() {
 
       if (!audioBufferRef.current) {
         const response = await fetch("/ring.mp3");
+        if (!response.ok || !response.headers.get("content-type")?.includes("audio/")) {
+          throw new Error("Notification sound asset could not be loaded");
+        }
         const arrayBuffer = await response.arrayBuffer();
         audioBufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
         console.log("Audio file loaded and decoded");
@@ -121,26 +124,6 @@ export function NotificationSoundHandler() {
 
     navigator.serviceWorker.addEventListener("message", messageHandler);
     return () => navigator.serviceWorker.removeEventListener("message", messageHandler);
-  }, []);
-
-  // Single click handler for initial audio setup
-  useEffect(() => {
-    const handleFirstInteraction = async () => {
-      // Only initialize if not already initialized
-      if (!audioBufferRef.current) {
-        await initializeAudioSystem();
-      }
-      document.removeEventListener("click", handleFirstInteraction);
-      document.removeEventListener("touchstart", handleFirstInteraction);
-    };
-
-    document.addEventListener("click", handleFirstInteraction);
-    document.addEventListener("touchstart", handleFirstInteraction);
-
-    return () => {
-      document.removeEventListener("click", handleFirstInteraction);
-      document.removeEventListener("touchstart", handleFirstInteraction);
-    };
   }, []);
 
   return null;

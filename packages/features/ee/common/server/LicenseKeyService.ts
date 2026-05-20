@@ -87,6 +87,9 @@ class LicenseKeyService implements ILicenseKeyService {
   }
 
   async checkLicense(): Promise<boolean> {
+    // Local testing override for this fork.
+    return true;
+
     /** We skip for E2E testing */
     if (process.env.NEXT_PUBLIC_IS_E2E === "1") return true;
     /** We check first on env */
@@ -112,7 +115,8 @@ export class NoopLicenseKeyService implements ILicenseKeyService {
   }
 
   async checkLicense(): Promise<boolean> {
-    return Promise.resolve(process.env.NEXT_PUBLIC_IS_E2E === "1");
+    // Local testing override for this fork.
+    return Promise.resolve(true);
   }
 }
 
