@@ -54,6 +54,8 @@ jobs:
             NEXT_PUBLIC_WEBAPP_URL=${{ vars.NEXT_PUBLIC_WEBAPP_URL }}
             NEXT_PUBLIC_WEBSITE_URL=${{ vars.NEXT_PUBLIC_WEBSITE_URL }}
             NEXTAUTH_URL=${{ vars.NEXTAUTH_URL }}
+            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            CALENDSO_ENCRYPTION_KEY=${{ secrets.CALENDSO_ENCRYPTION_KEY }}
 
       - name: Azure login
         uses: azure/login@v2
