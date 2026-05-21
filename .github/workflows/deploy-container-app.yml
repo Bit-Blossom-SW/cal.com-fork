@@ -12,7 +12,7 @@ permissions:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/cal-com
-  CONTAINER_APP_NAME: cal-com-container-app
+  CONTAINER_APP_NAME: cal-com-container-web
   RESOURCE_GROUP: cal-com-rg
 
 jobs:
