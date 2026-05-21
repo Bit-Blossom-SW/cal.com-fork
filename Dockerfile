@@ -26,6 +26,7 @@ ENV NEXT_PUBLIC_WEBSITE_URL=${NEXT_PUBLIC_WEBSITE_URL}
 ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 ENV CALENDSO_ENCRYPTION_KEY=${CALENDSO_ENCRYPTION_KEY}
+RUN yarn workspace @calcom/trpc build
 RUN yarn workspace @calcom/prisma prisma generate --schema schema.prisma
 RUN yarn workspace @calcom/web copy-static && yarn workspace @calcom/web next build
 
