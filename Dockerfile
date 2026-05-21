@@ -15,9 +15,9 @@ COPY tests ./tests
 RUN corepack enable && yarn install
 
 FROM deps AS builder
-ARG NEXT_PUBLIC_WEBAPP_URL
-ARG NEXT_PUBLIC_WEBSITE_URL
-ARG NEXTAUTH_URL
+ARG NEXT_PUBLIC_WEBAPP_URL=https://calendar.wecallyourmom.com
+ARG NEXT_PUBLIC_WEBSITE_URL=https://calendar.wecallyourmom.com
+ARG NEXTAUTH_URL=https://calendar.wecallyourmom.com
 ARG NEXTAUTH_SECRET=build-time-nextauth-secret
 ARG CALENDSO_ENCRYPTION_KEY=12345678901234567890123456789012
 ENV BUILD_STANDALONE=true
