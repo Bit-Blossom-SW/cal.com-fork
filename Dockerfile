@@ -6,11 +6,12 @@ ENV YARN_ENABLE_IMMUTABLE_INSTALLS=false
 ENV HUSKY=0
 
 FROM base AS deps
-COPY package.json yarn.lock .yarnrc.yml turbo.json i18n.json ./
+COPY package.json yarn.lock .yarnrc.yml turbo.json i18n.json playwright.config.ts ./
 COPY .yarn ./.yarn
 COPY apps ./apps
 COPY packages ./packages
 COPY example-apps ./example-apps
+COPY tests ./tests
 RUN corepack enable && yarn install
 
 FROM deps AS builder

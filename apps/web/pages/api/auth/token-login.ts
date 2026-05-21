@@ -14,11 +14,11 @@ const usedNonces = new Map<string, number>();
 
 function cleanupNonces() {
   const now = Date.now();
-  for (const [nonce, timestamp] of usedNonces) {
+  usedNonces.forEach((timestamp, nonce) => {
     if (now - timestamp > 60_000) {
       usedNonces.delete(nonce);
     }
-  }
+  });
 }
 
 // Run cleanup every 30 seconds
@@ -139,7 +139,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     profileId: profile?.id ?? null,
     upId,
     orgAwareUsername: user.username,
-    org: null,
     iat: Math.floor(Date.now() / 1000),
   };
 

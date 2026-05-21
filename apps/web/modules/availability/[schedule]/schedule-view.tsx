@@ -121,7 +121,7 @@ export const AvailabilitySettingsWebWrapper = ({
       enableOverrides={true}
       timeFormat={timeFormat}
       weekStart={me.data?.weekStart || "Sunday"}
-      backPath={fromEventType ? true : undefined}
+      backPath={!!fromEventType}
       disableEditableHeading={true}
       handleDelete={() => {
         scheduleId && deleteMutation.mutate({ scheduleId });
